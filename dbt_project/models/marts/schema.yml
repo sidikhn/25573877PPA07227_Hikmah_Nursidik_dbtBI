@@ -1,0 +1,82 @@
+version: 2
+
+models:
+  - name: mart_daily_sales
+    description: "Tabel mart ringkasan agregasi penjualan harian. Menyediakan indikator kinerja utama (KPI) harian seperti total pendapatan, total transaksi, unit terjual, dan rata-rata nilai transaksi."
+    columns:
+      - name: sale_date
+        description: "Tanggal transaksi bisnis yang menjadi dimensi waktu harian."
+        tests:
+          - unique
+          - not_null
+      - name: total_orders
+        description: "Jumlah transaksi pemesanan unik pada tanggal tersebut."
+        tests:
+          - not_null
+      - name: total_units_sold
+        description: "Total akumulasi jumlah unit barang yang terjual."
+        tests:
+          - not_null
+      - name: total_revenue
+        description: "Total nilai omzet/pendapatan kotor pada tanggal tersebut (rupiah)."
+        tests:
+          - not_null
+      - name: avg_order_value
+        description: "Rata-rata nilai pendapatan per transaksi pesanan (Average Order Value)."
+        tests:
+          - not_null
+      - name: min_order_value
+        description: "Nilai transaksi terkecil pada tanggal tersebut."
+      - name: max_order_value
+        description: "Nilai transaksi terbesar pada tanggal tersebut."
+
+  - name: mart_sales_by_city_product
+    description: "Tabel mart ringkasan penjualan per kombinasi kota cabang dan jenis produk. Digunakan untuk analisis kontribusi wilayah dan produk terlaris (best-sellers)."
+    columns:
+      - name: city
+        description: "Nama kota cabang ritel (Yogyakarta, Jakarta, Bandung, Surabaya, Semarang, atau Unknown)."
+        tests:
+          - not_null
+      - name: product_id
+        description: "Kode unik identifikasi produk ritel."
+        tests:
+          - not_null
+      - name: product_name
+        description: "Nama produk ritel."
+        tests:
+          - not_null
+      - name: total_orders
+        description: "Jumlah pesanan yang memuat produk tersebut di kota bersangkutan."
+        tests:
+          - not_null
+      - name: total_units_sold
+        description: "Total unit produk yang terjual di kota bersangkutan."
+        tests:
+          - not_null
+      - name: total_revenue
+        description: "Total omzet penjualan produk di kota bersangkutan (rupiah)."
+        tests:
+          - not_null
+      - name: avg_unit_price
+        description: "Rata-rata harga satuan produk."
+      - name: avg_revenue_per_order
+        description: "Rata-rata pendapatan per pesanan produk tersebut."
+
+  - name: mart_sales_incremental
+    description: "Tabel fakta transaksi ritel dengan materialisasi incremental (fitur bonus dbt). Memungkinkan pemuatan data secara efisien tanpa membangun ulang seluruh riwayat."
+    columns:
+      - name: sale_id
+        description: "Primary key unik transaksi penjualan."
+        tests:
+          - unique
+          - not_null
+      - name: sale_date
+        description: "Tanggal transaksi penjualan."
+        tests:
+          - not_null
+      - name: total_amount
+        description: "Total nominal transaksi (rupiah)."
+        tests:
+          - not_null
+      - name: dbt_updated_at
+        description: "Timestamp saat record diproses oleh pipeline dbt."

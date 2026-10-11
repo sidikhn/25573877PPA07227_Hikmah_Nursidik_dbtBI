@@ -1,0 +1,26 @@
+name: 'dbt_tugas'
+version: '1.0.0'
+config-version: 2
+
+# Mengatur profil yang digunakan di profiles.yml
+profile: 'dbt_tugas'
+
+# Lokasi folder di dalam dbt project
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Konfigurasi materialization
+models:
+  dbt_tugas:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

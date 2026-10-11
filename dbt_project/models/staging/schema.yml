@@ -1,0 +1,64 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Database DuckDB schema raw berisi data mentah yang diimpor dari tugas Airflow."
+    tables:
+      - name: sales
+        description: "Tabel transaksi penjualan ritel mentah dari data/raw/sales.csv."
+        columns:
+          - name: sale_id
+            description: "ID transaksi mentah"
+          - name: sale_date
+            description: "Tanggal transaksi mentah"
+          - name: product_id
+            description: "Kode produk mentah"
+          - name: product_name
+            description: "Nama produk mentah"
+          - name: quantity
+            description: "Kuantitas pembelian"
+          - name: unit_price
+            description: "Harga satuan"
+          - name: total_amount
+            description: "Total harga transaksi"
+          - name: city
+            description: "Kota lokasi transaksi"
+
+models:
+  - name: stg_sales
+    description: "Model staging untuk transaksi penjualan ritel. Melakukan standarisasi penamaan, casting tipe data eksplisit, deduplikasi record berdasarkan sale_id, dan penanganan nilai kosong (null/unknown)."
+    columns:
+      - name: sale_id
+        description: "Primary key unik transaksi penjualan ritel."
+        tests:
+          - unique
+          - not_null
+      - name: sale_date
+        description: "Tanggal terjadinya transaksi penjualan dalam tipe data DATE standar (YYYY-MM-DD)."
+        tests:
+          - not_null
+      - name: product_id
+        description: "Kode unik identifikasi produk."
+        tests:
+          - not_null
+      - name: product_name
+        description: "Nama produk yang dijual."
+        tests:
+          - not_null
+      - name: quantity
+        description: "Jumlah unit barang yang dibeli dalam transaksi."
+        tests:
+          - not_null
+      - name: unit_price
+        description: "Harga per unit barang (rupiah)."
+        tests:
+          - not_null
+      - name: total_amount
+        description: "Total nilai transaksi (rupiah). Jika null, dihitung ulang dari quantity * unit_price."
+        tests:
+          - not_null
+      - name: city
+        description: "Kota tempat transaksi dilakukan. Nilai kosong diganti menjadi 'Unknown'."
+        tests:
+          - not_null
